@@ -195,8 +195,9 @@ function SectionHeader({ title, viewAll, viewAllLabel }: { title: string; viewAl
   );
 }
 
-export function ProductCard({ product }: { product: import("@/lib/data").Product }) {
+export function ProductCard({ product }: { product: Product }) {
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+  const { add } = useCart();
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:shadow-soft">
       <Link to="/product/$id" params={{ id: product.id }} className="block">
@@ -225,20 +226,13 @@ export function ProductCard({ product }: { product: import("@/lib/data").Product
           <span className="text-lg font-bold text-foreground">₹{product.price}</span>
           {off > 0 && <span className="text-xs text-muted-foreground line-through">₹{product.mrp}</span>}
         </div>
-        <AddButton product={product} />
+        <button
+          onClick={() => { add(product, 1); toast.success(`${product.name} added`); }}
+          className="mt-3 w-full rounded-full bg-primary py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          Add to cart
+        </button>
       </div>
     </div>
-  );
-}
-
-function AddButton({ product }: { product: import("@/lib/data").Product }) {
-  const { add } = require("@/lib/cart").useCart() as ReturnType<typeof import("@/lib/cart").useCart>;
-  return (
-    <button
-      onClick={() => { add(product, 1); import("sonner").then(({ toast }) => toast.success(`${product.name} added`)); }}
-      className="mt-3 w-full rounded-full bg-primary py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-    >
-      Add to cart
-    </button>
   );
 }
