@@ -14,7 +14,262 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          acres: number
+          contact_name: string
+          contact_phone: string
+          created_at: string
+          id: string
+          notes: string | null
+          price_per_acre: number
+          provider_id: string | null
+          provider_name: string
+          scheduled_date: string
+          service_slug: string
+          status: string
+          total: number
+          updated_at: string
+          user_id: string
+          village: string
+        }
+        Insert: {
+          acres: number
+          contact_name: string
+          contact_phone: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          price_per_acre: number
+          provider_id?: string | null
+          provider_name: string
+          scheduled_date: string
+          service_slug: string
+          status?: string
+          total: number
+          updated_at?: string
+          user_id: string
+          village: string
+        }
+        Update: {
+          acres?: number
+          contact_name?: string
+          contact_phone?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          price_per_acre?: number
+          provider_id?: string | null
+          provider_name?: string
+          scheduled_date?: string
+          service_slug?: string
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id?: string
+          village?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "service_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          order_id: string
+          product_id: string
+          quantity: number
+          seller: string | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          order_id: string
+          product_id: string
+          quantity: number
+          seller?: string | null
+          unit_price: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          order_id?: string
+          product_id?: string
+          quantity?: number
+          seller?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          address_line: string
+          contact_name: string
+          contact_phone: string
+          created_at: string
+          district: string | null
+          id: string
+          notes: string | null
+          payment_method: string
+          payment_status: string
+          pincode: string | null
+          shipping: number
+          status: string
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string
+          village: string
+        }
+        Insert: {
+          address_line: string
+          contact_name: string
+          contact_phone: string
+          created_at?: string
+          district?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          payment_status?: string
+          pincode?: string | null
+          shipping?: number
+          status?: string
+          subtotal: number
+          total: number
+          updated_at?: string
+          user_id: string
+          village: string
+        }
+        Update: {
+          address_line?: string
+          contact_name?: string
+          contact_phone?: string
+          created_at?: string
+          district?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string
+          payment_status?: string
+          pincode?: string | null
+          shipping?: number
+          status?: string
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
+          village?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      service_providers: {
+        Row: {
+          area: string
+          available: boolean
+          created_at: string
+          id: string
+          name: string
+          price_per_acre: number
+          price_unit: string
+          rating: number
+          service_slug: string
+        }
+        Insert: {
+          area: string
+          available?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          price_per_acre: number
+          price_unit?: string
+          rating?: number
+          service_slug: string
+        }
+        Update: {
+          area?: string
+          available?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          price_per_acre?: number
+          price_unit?: string
+          rating?: number
+          service_slug?: string
+        }
+        Relationships: []
+      }
+      status_events: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          note: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          note?: string | null
+          status: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          note?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

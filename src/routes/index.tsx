@@ -5,7 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Search, ShieldCheck, Truck, Sparkles, Leaf, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { categories, products, services } from "@/lib/data";
+import { categories, products, services, type Product } from "@/lib/data";
+import { useCart } from "@/lib/cart";
+import { toast } from "sonner";
 import heroImg from "@/assets/hero-farm.jpg";
 import droneImg from "@/assets/drone.jpg";
 import harvesterImg from "@/assets/harvester.jpg";
@@ -193,29 +195,28 @@ function SectionHeader({ title, viewAll, viewAllLabel }: { title: string; viewAl
   );
 }
 
-export function ProductCard({ product }: { product: import("@/lib/data").Product }) {
+export function ProductCard({ product }: { product: Product }) {
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+  const { add } = useCart();
   return (
-    <Link
-      to="/product/$id"
-      params={{ id: product.id }}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:shadow-soft"
-    >
-      <div className="relative aspect-square overflow-hidden bg-accent/50">
-        <div className="grid h-full w-full place-items-center text-6xl">
-          {categories.find((c) => c.slug === product.category)?.emoji ?? "🌾"}
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:shadow-soft">
+      <Link to="/product/$id" params={{ id: product.id }} className="block">
+        <div className="relative aspect-square overflow-hidden bg-accent/50">
+          <div className="grid h-full w-full place-items-center text-6xl">
+            {categories.find((c) => c.slug === product.category)?.emoji ?? "🌾"}
+          </div>
+          {off > 0 && (
+            <span className="absolute left-3 top-3 rounded-full bg-brand-green px-2 py-0.5 text-xs font-bold text-primary-foreground">
+              {off}% OFF
+            </span>
+          )}
         </div>
-        {off > 0 && (
-          <span className="absolute left-3 top-3 rounded-full bg-brand-green px-2 py-0.5 text-xs font-bold text-primary-foreground">
-            {off}% OFF
-          </span>
-        )}
-      </div>
+      </Link>
       <div className="flex flex-1 flex-col p-4">
         <div className="text-xs uppercase tracking-wide text-muted-foreground">{product.seller}</div>
-        <div className="mt-1 line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary">
+        <Link to="/product/$id" params={{ id: product.id }} className="mt-1 line-clamp-2 text-sm font-semibold text-foreground group-hover:text-primary">
           {product.name}
-        </div>
+        </Link>
         <div className="mt-1 text-xs text-muted-foreground">{product.unit}</div>
         <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
           <Star className="h-3.5 w-3.5 fill-brand-yellow text-brand-yellow" />
@@ -225,7 +226,13 @@ export function ProductCard({ product }: { product: import("@/lib/data").Product
           <span className="text-lg font-bold text-foreground">₹{product.price}</span>
           {off > 0 && <span className="text-xs text-muted-foreground line-through">₹{product.mrp}</span>}
         </div>
+        <button
+          onClick={() => { add(product, 1); toast.success(`${product.name} added`); }}
+          className="mt-3 w-full rounded-full bg-primary py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+        >
+          Add to cart
+        </button>
       </div>
-    </Link>
+    </div>
   );
 }
