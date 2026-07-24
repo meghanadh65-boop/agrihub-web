@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
-import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -35,11 +34,6 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OrdersRoute = OrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -78,9 +72,9 @@ const ServicesIndexRoute = ServicesIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersIndexRoute = OrdersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => OrdersRoute,
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesServiceRoute = ServicesServiceRouteImport.update({
   id: '/services/$service',
@@ -93,9 +87,9 @@ const ProductIdRoute = ProductIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersIdRoute = OrdersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => OrdersRoute,
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const CategorySlugRoute = CategorySlugRouteImport.update({
   id: '/category/$slug',
@@ -108,9 +102,9 @@ const BookingSuccessRoute = BookingSuccessRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersBookingIdRoute = OrdersBookingIdRouteImport.update({
-  id: '/booking/$id',
-  path: '/booking/$id',
-  getParentRoute: () => OrdersRoute,
+  id: '/orders/booking/$id',
+  path: '/orders/booking/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -120,7 +114,6 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/orders': typeof OrdersRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/booking/success': typeof BookingSuccessRoute
@@ -158,7 +151,6 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/orders': typeof OrdersRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/booking/success': typeof BookingSuccessRoute
@@ -179,7 +171,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
-    | '/orders'
     | '/shop'
     | '/sitemap.xml'
     | '/booking/success'
@@ -216,7 +207,6 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/contact'
-    | '/orders'
     | '/shop'
     | '/sitemap.xml'
     | '/booking/success'
@@ -236,14 +226,16 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
-  OrdersRoute: typeof OrdersRouteWithChildren
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BookingSuccessRoute: typeof BookingSuccessRoute
   CategorySlugRoute: typeof CategorySlugRoute
+  OrdersIdRoute: typeof OrdersIdRoute
   ProductIdRoute: typeof ProductIdRoute
   ServicesServiceRoute: typeof ServicesServiceRoute
+  OrdersIndexRoute: typeof OrdersIndexRoute
   ServicesIndexRoute: typeof ServicesIndexRoute
+  OrdersBookingIdRoute: typeof OrdersBookingIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -260,13 +252,6 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/orders': {
-      id: '/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -320,10 +305,10 @@ declare module '@tanstack/react-router' {
     }
     '/orders/': {
       id: '/orders/'
-      path: '/'
+      path: '/orders'
       fullPath: '/orders/'
       preLoaderRoute: typeof OrdersIndexRouteImport
-      parentRoute: typeof OrdersRoute
+      parentRoute: typeof rootRouteImport
     }
     '/services/$service': {
       id: '/services/$service'
@@ -341,10 +326,10 @@ declare module '@tanstack/react-router' {
     }
     '/orders/$id': {
       id: '/orders/$id'
-      path: '/$id'
+      path: '/orders/$id'
       fullPath: '/orders/$id'
       preLoaderRoute: typeof OrdersIdRouteImport
-      parentRoute: typeof OrdersRoute
+      parentRoute: typeof rootRouteImport
     }
     '/category/$slug': {
       id: '/category/$slug'
@@ -362,28 +347,13 @@ declare module '@tanstack/react-router' {
     }
     '/orders/booking/$id': {
       id: '/orders/booking/$id'
-      path: '/booking/$id'
+      path: '/orders/booking/$id'
       fullPath: '/orders/booking/$id'
       preLoaderRoute: typeof OrdersBookingIdRouteImport
-      parentRoute: typeof OrdersRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface OrdersRouteChildren {
-  OrdersIdRoute: typeof OrdersIdRoute
-  OrdersIndexRoute: typeof OrdersIndexRoute
-  OrdersBookingIdRoute: typeof OrdersBookingIdRoute
-}
-
-const OrdersRouteChildren: OrdersRouteChildren = {
-  OrdersIdRoute: OrdersIdRoute,
-  OrdersIndexRoute: OrdersIndexRoute,
-  OrdersBookingIdRoute: OrdersBookingIdRoute,
-}
-
-const OrdersRouteWithChildren =
-  OrdersRoute._addFileChildren(OrdersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -392,14 +362,16 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
-  OrdersRoute: OrdersRouteWithChildren,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BookingSuccessRoute: BookingSuccessRoute,
   CategorySlugRoute: CategorySlugRoute,
+  OrdersIdRoute: OrdersIdRoute,
   ProductIdRoute: ProductIdRoute,
   ServicesServiceRoute: ServicesServiceRoute,
+  OrdersIndexRoute: OrdersIndexRoute,
   ServicesIndexRoute: ServicesIndexRoute,
+  OrdersBookingIdRoute: OrdersBookingIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

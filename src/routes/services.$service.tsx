@@ -3,54 +3,36 @@ import { SiteShell } from "@/components/SiteShell";
 import { services } from "@/lib/data";
 import { Card } from "@/components/ui/card";
 import { Star, CheckCircle2, MapPin, Clock } from "lucide-react";
-import { BookingForm } from "@/components/BookingForm";
+import { BookingForm, type Provider } from "@/components/BookingForm";
+import { supabase } from "@/integrations/supabase/client";
 import droneImg from "@/assets/drone.jpg";
 import harvesterImg from "@/assets/harvester.jpg";
 import tractorImg from "@/assets/tractor.jpg";
 import workforceImg from "@/assets/workforce.jpg";
+import { useEffect, useState } from "react";
 
 const imgs: Record<string, string> = { drone: droneImg, harvester: harvesterImg, tractor: tractorImg, workforce: workforceImg };
 
-const info: Record<string, { benefits: string[]; includes: string[]; providers: { name: string; area: string; rating: number }[]; price: string }> = {
+const info: Record<string, { benefits: string[]; includes: string[]; price: string }> = {
   drone: {
     benefits: ["90% less water usage", "10× faster than manual", "Even, precise coverage", "Reduces chemical drift"],
     includes: ["Certified drone pilot", "DGCA-approved drone", "Chemical mixing support", "GPS-mapped spraying"],
-    providers: [
-      { name: "SkyAgri Services", area: "Warangal, Karimnagar", rating: 4.8 },
-      { name: "AgriFly Pilots", area: "Nizamabad, Adilabad", rating: 4.7 },
-      { name: "GreenWings", area: "Nalgonda, Suryapet", rating: 4.6 },
-    ],
-    price: "₹350 / acre",
+    price: "₹320+/acre",
   },
   harvester: {
     benefits: ["Faster harvest, less grain loss", "Trained combine operators", "Flexible per-acre or per-hour", "Insured machinery"],
     includes: ["Combine harvester", "Skilled operator", "Diesel included", "Transport to site"],
-    providers: [
-      { name: "Balaji Harvesters", area: "Warangal", rating: 4.7 },
-      { name: "Sri Agri Combines", area: "Karimnagar", rating: 4.6 },
-      { name: "Farmers Combines", area: "Nalgonda", rating: 4.5 },
-    ],
-    price: "₹1,800 / acre",
+    price: "₹1,750+/acre",
   },
   tractor: {
     benefits: ["Ploughing, tilling & haulage", "Multiple implements available", "Hourly & daily rates", "Trusted local vendors"],
     includes: ["Tractor + operator", "Choice of implement", "Fuel included", "On-time arrival"],
-    providers: [
-      { name: "Ravi Tractors", area: "Warangal", rating: 4.6 },
-      { name: "Kisan Tractor Rentals", area: "Karimnagar", rating: 4.7 },
-      { name: "AgriPower", area: "Nizamabad", rating: 4.5 },
-    ],
-    price: "₹650 / hour",
+    price: "₹620+/hour",
   },
   workforce: {
     benefits: ["Skilled and semi-skilled workers", "Sowing, weeding, harvesting", "Construction & maintenance", "Daily or contract basis"],
     includes: ["Group of workers", "Supervisor on-site", "Basic tools", "Attendance tracking"],
-    providers: [
-      { name: "Village Workforce Co.", area: "Warangal", rating: 4.7 },
-      { name: "AgriHands", area: "Karimnagar", rating: 4.6 },
-      { name: "Krushi Workers", area: "Nizamabad", rating: 4.5 },
-    ],
-    price: "₹450 / worker / day",
+    price: "₹430+/worker-day",
   },
 };
 
@@ -86,6 +68,14 @@ export const Route = createFileRoute("/services/$service")({
 function ServiceDetail() {
   const { service } = Route.useLoaderData();
   const meta = info[service.slug];
+  const [providers, setProviders] = useState<Provider[]>([]);
+
+  useEffect(() => {
+    supabase.from("service_providers").select("id, name, area, rating, price_per_acre, price_unit").eq("service_slug", service.slug).eq("available", true).then(({ data }) => {
+      setProviders((data ?? []) as Provider[]);
+    });
+  }, [service.slug]);
+
   return (
     <SiteShell>
       <section className="relative overflow-hidden">
@@ -101,7 +91,7 @@ function ServiceDetail() {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_420px]">
+      <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_440px]">
         <div className="space-y-10">
           <Card className="p-6 md:p-8">
             <h2 className="text-2xl font-bold">Why book this service</h2>
@@ -128,8 +118,8 @@ function ServiceDetail() {
           <div>
             <h2 className="text-2xl font-bold">Available providers</h2>
             <div className="mt-4 space-y-3">
-              {meta.providers.map((p) => (
-                <Card key={p.name} className="flex items-center justify-between p-5">
+              {providers.map((p) => (
+                <Card key={p.id} className="flex items-center justify-between p-5">
                   <div>
                     <div className="font-semibold">{p.name}</div>
                     <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
@@ -137,8 +127,11 @@ function ServiceDetail() {
                       <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> Same day</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 rounded-full bg-brand-yellow/25 px-3 py-1 text-sm font-semibold">
-                    <Star className="h-4 w-4 fill-brand-yellow text-brand-yellow" /> {p.rating}
+                  <div className="text-right">
+                    <div className="text-sm font-bold text-primary">₹{p.price_per_acre}<span className="text-[10px] font-normal text-muted-foreground">/{p.price_unit}</span></div>
+                    <div className="mt-1 flex items-center gap-1 rounded-full bg-brand-yellow/25 px-2 py-0.5 text-xs font-semibold">
+                      <Star className="h-3 w-3 fill-brand-yellow text-brand-yellow" /> {p.rating}
+                    </div>
                   </div>
                 </Card>
               ))}
@@ -147,7 +140,7 @@ function ServiceDetail() {
         </div>
 
         <div className="lg:sticky lg:top-24 lg:self-start">
-          <BookingForm service={service.slug} />
+          <BookingForm service={service.slug} providers={providers} />
         </div>
       </section>
     </SiteShell>
