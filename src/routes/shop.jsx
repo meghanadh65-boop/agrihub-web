@@ -3,7 +3,7 @@ import { SiteShell } from "@/components/SiteShell";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Search, MapPin, Store } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { categories, products } from "@/lib/data";
 import { ProductCard } from "./index";
 import { useState } from "react";
@@ -26,20 +26,33 @@ export const Route = createFileRoute("/shop")({
   component: ShopPage,
 });
 
-const stores = [
-  { name: "Krishna Agri Store", city: "Warangal", km: 2.4 },
-  { name: "Balaji Seeds & Fertilizers", city: "Karimnagar", km: 4.1 },
-  { name: "GreenLeaf Traders", city: "Nizamabad", km: 6.7 },
-];
-
 function ShopPage() {
   const { t } = useI18n();
   const [active, setActive] = useState("all");
   const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
+
   const filtered = products.filter(
     (p) =>
       (active === "all" || p.category === active) && p.name.toLowerCase().includes(q.toLowerCase()),
   );
+
+  // Pagination Logic
+  const itemsPerPage = 24;
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedProducts = filtered.slice(startIndex, startIndex + itemsPerPage);
+
+  const handleCategoryChange = (slug) => {
+    setActive(slug);
+    setPage(1);
+  };
+
+  const handleQueryChange = (val) => {
+    setQ(val);
+    setPage(1);
+  };
+
   return (
     <SiteShell>
       <section className="relative overflow-hidden border-b border-border">
@@ -60,7 +73,7 @@ function ShopPage() {
             <Search className="ml-4 h-5 w-5 self-center text-muted-foreground" />
             <Input
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => handleQueryChange(e.target.value)}
               className="border-0 bg-transparent shadow-none focus-visible:ring-0"
               placeholder={t("common.search")}
             />
@@ -72,41 +85,18 @@ function ShopPage() {
 
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="flex flex-wrap gap-2">
-          <Chip active={active === "all"} onClick={() => setActive("all")}>
+          <Chip active={active === "all"} onClick={() => handleCategoryChange("all")}>
             All
           </Chip>
           {categories.map((c) => (
-            <Chip key={c.slug} active={active === c.slug} onClick={() => setActive(c.slug)}>
-              <span className="mr-1">{c.emoji}</span> {c.name}
+            <Chip key={c.slug} active={active === c.slug} onClick={() => handleCategoryChange(c.slug)}>
+              {c.name}
             </Chip>
           ))}
         </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[280px_1fr]">
           <aside className="space-y-4">
-            <Card className="p-5">
-              <div className="mb-3 flex items-center gap-2 font-semibold">
-                <MapPin className="h-4 w-4 text-primary" /> Nearby stores
-              </div>
-              <ul className="space-y-3">
-                {stores.map((s) => (
-                  <li
-                    key={s.name}
-                    className="flex items-start gap-3 border-b border-border pb-3 last:border-0 last:pb-0"
-                  >
-                    <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent">
-                      <Store className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold">{s.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {s.city} · {s.km} km away
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </Card>
             <Card className="p-5">
               <div className="font-semibold">Categories</div>
               <ul className="mt-3 space-y-1.5 text-sm">
@@ -118,7 +108,7 @@ function ShopPage() {
                       className="flex items-center justify-between rounded-md px-2 py-1.5 hover:bg-accent"
                     >
                       <span>
-                        {c.emoji} {c.name}
+                        {c.name}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {products.filter((p) => p.category === c.slug).length}
@@ -132,11 +122,48 @@ function ShopPage() {
 
           <div>
             <div className="mb-4 text-sm text-muted-foreground">{filtered.length} products</div>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {filtered.map((p) => (
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {paginatedProducts.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-10 flex items-center justify-center gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full"
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pNum) => (
+                  <Button
+                    key={pNum}
+                    variant={page === pNum ? "default" : "outline"}
+                    size="sm"
+                    className={`h-9 w-9 rounded-full ${page === pNum ? "bg-[#09B652] hover:bg-[#052416] text-white" : ""}`}
+                    onClick={() => setPage(pNum)}
+                  >
+                    {pNum}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rounded-full"
+                  disabled={page === totalPages}
+                  onClick={() => setPage(page + 1)}
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </section>

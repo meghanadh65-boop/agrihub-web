@@ -51,11 +51,15 @@ function CartPage() {
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
           <div className="space-y-3">
             {items.map((i) => {
-              const emoji = categories.find((c) => c.slug === i.category)?.emoji ?? "🌾";
+              const categoryImg = categories.find((c) => c.slug === i.category)?.image ?? "/seeds.png";
               return (
                 <Card key={i.id} className="flex gap-4 p-4">
-                  <div className="grid h-24 w-24 shrink-0 place-items-center rounded-lg bg-accent text-4xl">
-                    {emoji}
+                  <div className="h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-accent border border-border">
+                    <img
+                      src={categoryImg}
+                      alt={i.name}
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                   <div className="flex flex-1 flex-col">
                     <div className="text-xs uppercase tracking-wide text-muted-foreground">

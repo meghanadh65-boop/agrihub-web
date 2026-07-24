@@ -96,19 +96,39 @@ function HomePage() {
           viewAll="/shop"
           viewAllLabel={t("cta.viewAll")}
         />
-        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-6">
           {categories.map((c) => (
             <Link
               key={c.slug}
               to="/category/$slug"
               params={{ slug: c.slug }}
-              className="group flex flex-col items-center rounded-2xl border border-border bg-card p-6 text-center transition-all hover:-translate-y-1 hover:border-primary hover:shadow-soft"
+              className="group relative flex flex-col items-center rounded-2xl border border-gray-100 bg-white p-6 text-center transition-all duration-300 hover:-translate-y-2 hover:border-[#09B652]/30 hover:shadow-xl shadow-sm"
             >
-              <div className="grid h-14 w-14 place-items-center rounded-full bg-accent text-3xl transition-colors group-hover:bg-brand-yellow">
-                {c.emoji}
+              {/* Background gradient hint on hover */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-[#09B652]/5 to-[#FDCF20]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+              {/* Image Container with crop zoom effect */}
+              <div className="relative z-10 h-20 w-20 overflow-hidden rounded-full border-2 border-white shadow-md bg-gray-50 transition-all duration-300 group-hover:scale-105 group-hover:border-[#09B652] group-hover:shadow-lg">
+                <img
+                  src={c.image}
+                  alt={c.name}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
               </div>
-              <div className="mt-3 text-sm font-semibold text-foreground">{c.name}</div>
-              <div className="mt-1 text-xs text-muted-foreground">{c.blurb}</div>
+
+              {/* Text info */}
+              <div className="relative z-10 mt-4 text-base font-extrabold text-[#052416] group-hover:text-[#09B652] transition-colors duration-300 tracking-tight">
+                {c.name}
+              </div>
+              <div className="relative z-10 mt-1.5 text-xs text-gray-500 leading-relaxed">
+                {c.blurb}
+              </div>
+
+              {/* Micro-arrow indicator */}
+              <div className="relative z-10 mt-4 flex items-center justify-center text-xs font-bold text-[#09B652] opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-1 group-hover:translate-y-0">
+                <span>Explore</span>
+                <ArrowRight className="ml-1 h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </div>
             </Link>
           ))}
         </div>
@@ -230,10 +250,14 @@ function HomePage() {
 
 function SectionHeader({ title, viewAll, viewAllLabel }) {
   return (
-    <div className="flex items-end justify-between">
-      <h2 className="text-3xl font-bold text-foreground">{title}</h2>
-      <Link to={viewAll} className="text-sm font-semibold text-primary hover:underline">
-        {viewAllLabel} →
+    <div className="flex items-center justify-between border-l-4 border-[#09B652] pl-4">
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-[#052416] tracking-tight">{title}</h2>
+      <Link
+        to={viewAll}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-[#09B652]/30 text-[#09B652] text-xs font-bold hover:bg-[#09B652] hover:text-white transition-all shadow-sm"
+      >
+        {viewAllLabel}
+        <ArrowRight className="h-3 w-3" />
       </Link>
     </div>
   );
@@ -242,13 +266,16 @@ function SectionHeader({ title, viewAll, viewAllLabel }) {
 export function ProductCard({ product }) {
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
   const { add } = useCart();
+  const categoryImage = categories.find((c) => c.slug === product.category)?.image ?? "/seeds.png";
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:shadow-soft">
       <Link to="/product/$id" params={{ id: product.id }} className="block">
         <div className="relative aspect-square overflow-hidden bg-accent/50">
-          <div className="grid h-full w-full place-items-center text-6xl">
-            {categories.find((c) => c.slug === product.category)?.emoji ?? "🌾"}
-          </div>
+          <img
+            src={categoryImage}
+            alt={product.name}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
           {off > 0 && (
             <span className="absolute left-3 top-3 rounded-full bg-brand-green px-2 py-0.5 text-xs font-bold text-primary-foreground">
               {off}% OFF
@@ -283,7 +310,7 @@ export function ProductCard({ product }) {
             add(product, 1);
             toast.success(`${product.name} added`);
           }}
-          className="mt-3 w-full rounded-full bg-primary py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          className="mt-auto w-full rounded-full bg-primary py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           Add to cart
         </button>

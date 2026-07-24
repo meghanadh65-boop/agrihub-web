@@ -59,8 +59,12 @@ function CategoryPage() {
             <span className="text-foreground">{category.name}</span>
           </nav>
           <div className="mt-4 flex items-center gap-4">
-            <div className="grid h-16 w-16 place-items-center rounded-2xl bg-brand-yellow text-4xl">
-              {category.emoji}
+            <div className="h-16 w-16 overflow-hidden rounded-2xl border-2 border-white shadow-md bg-gray-50">
+              <img
+                src={category.image}
+                alt={category.name}
+                className="h-full w-full object-cover"
+              />
             </div>
             <div>
               <h1 className="text-3xl font-extrabold sm:text-4xl">{category.name}</h1>

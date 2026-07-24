@@ -85,8 +85,12 @@ function ProductPage() {
         </nav>
 
         <div className="mt-6 grid gap-10 lg:grid-cols-2">
-          <div className="grid aspect-square place-items-center rounded-3xl bg-accent text-[10rem]">
-            {category?.emoji}
+          <div className="aspect-square overflow-hidden rounded-3xl bg-accent border border-border">
+            <img
+              src={category?.image ?? "/seeds.png"}
+              alt={product.name}
+              className="h-full w-full object-cover"
+            />
           </div>
           <div>
             <div className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -172,8 +176,12 @@ function ProductPage() {
               {related.map((p) => (
                 <Card key={p.id} className="overflow-hidden">
                   <Link to="/product/$id" params={{ id: p.id }} className="flex flex-col">
-                    <div className="grid aspect-square place-items-center bg-accent/50 text-6xl">
-                      {categories.find((c) => c.slug === p.category)?.emoji}
+                    <div className="aspect-square overflow-hidden bg-accent/50">
+                      <img
+                        src={categories.find((c) => c.slug === p.category)?.image ?? "/seeds.png"}
+                        alt={p.name}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                     <div className="p-4">
                       <div className="line-clamp-2 text-sm font-semibold">{p.name}</div>
