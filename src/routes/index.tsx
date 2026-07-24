@@ -52,18 +52,14 @@ function HomePage() {
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-background/85">{t("hero.subtitle")}</p>
 
-          <div className="mt-8 flex max-w-xl rounded-full bg-background p-1.5 shadow-warm">
-            <Search className="ml-4 h-5 w-5 self-center text-muted-foreground" />
-            <Input
-              className="border-0 bg-transparent text-base shadow-none focus-visible:ring-0"
-              placeholder={t("common.search")}
-            />
+          <div className="mt-8">
             <Link to="/shop">
-              <Button className="rounded-full bg-primary px-6 text-primary-foreground hover:bg-brand-green-dark">
-                {t("cta.shop")}
+              <Button size="lg" className="rounded-full bg-primary px-8 text-primary-foreground hover:bg-brand-green-dark">
+                {t("cta.shop")} <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             </Link>
           </div>
+
 
           <div className="mt-6 flex flex-wrap gap-3">
             <Link to="/services">
