@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { ChevronRight, ShieldCheck, Truck, Star, Store, Plus, Minus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useCart } from "@/lib/cart";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/product/$id")({
   head: ({ params }) => {
