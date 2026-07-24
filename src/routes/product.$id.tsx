@@ -44,6 +44,10 @@ function ProductPage() {
   const off = Math.round(((product.mrp - product.price) / product.mrp) * 100);
   const [qty, setQty] = useState(1);
   const related = products.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const { add } = useCart();
+  const navigate = useNavigate();
+  const addToCart = () => { add(product, qty); toast.success(`${product.name} added to cart`); };
+  const buyNow = () => { add(product, qty); navigate({ to: "/cart" }); };
 
   return (
     <SiteShell>
@@ -91,8 +95,8 @@ function ProductPage() {
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
-              <Button size="lg" className="flex-1" onClick={() => toast.success("Added to cart")}>Add to Cart</Button>
-              <Button size="lg" variant="secondary" className="flex-1 bg-brand-yellow text-foreground hover:brightness-95" onClick={() => toast.success("Order placed!")}>Buy Now</Button>
+              <Button size="lg" className="flex-1" onClick={addToCart}>Add to Cart</Button>
+              <Button size="lg" variant="secondary" className="flex-1 bg-brand-yellow text-foreground hover:brightness-95" onClick={buyNow}>Buy Now</Button>
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
